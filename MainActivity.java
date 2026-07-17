@@ -120,6 +120,17 @@ public class MainActivity extends Activity {
                                 "dialogs[n].style.setProperty('display', 'none', 'important'); " +
                             "} " +
 
+                            // 6. HIDE SPECIFIC PARAGRAPHS (Privacy Policy & Secured Banner)
+                            "var pTags = document.querySelectorAll('p'); " +
+                            "for (var p = 0; p < pTags.length; p++) { " +
+                                "if (pTags[p].innerText) { " +
+                                    "var pText = pTags[p].innerText; " +
+                                    "if (pText.includes('By continuing, you agree to the') || pText.includes('Secured & Encrypted')) { " +
+                                        "pTags[p].style.setProperty('display', 'none', 'important'); " +
+                                    "} " +
+                                "} " +
+                            "} " +
+
                         "}, 100); " + // 100ms FLASH SPEED
                 "})()";
 
@@ -236,5 +247,5 @@ public class MainActivity extends Activity {
             moveTaskToBack(true);
         }
     }
-                    }
-                
+            }
+            
