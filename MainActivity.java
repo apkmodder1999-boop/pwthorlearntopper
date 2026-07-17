@@ -14,8 +14,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide; // Optional: If you use Glide to load web URLs directly into ImageViews
-
 public class MainActivity extends Activity {
 
     private WebView webView;
@@ -38,7 +36,7 @@ public class MainActivity extends Activity {
             return;
         }
 
-        // 1. Setup Parent Layout Containers
+        // Setup Parent Layout Containers
         rootLayout = new FrameLayout(this);
         webView = new WebView(this);
         splashLayout = new FrameLayout(this);
@@ -57,9 +55,7 @@ public class MainActivity extends Activity {
         
         setContentView(rootLayout);
 
-        // 2. Load the Splash Screen Image
-        // NOTE: If you are not using an image loading library like Glide, Picasso, or Coil, 
-        // you can use the background thread loader built below.
+        // Load the Splash Screen Image using native background thread helper
         loadSplashImage(splashImageView, splashImageUrl);
 
         // Hide Splash Screen after exactly 5 seconds (5000ms)
@@ -72,7 +68,7 @@ public class MainActivity extends Activity {
             }
         }, 5000);
 
-        // 3. Setup WebView Settings
+        // Setup WebView Settings
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
@@ -232,8 +228,6 @@ public class MainActivity extends Activity {
                 return true;
             } catch (Exception e) { return false; }
         }
-
-        // --- REMOVED THE BLOCKING/REDIRECT RULE FOR /study/batches TO ALLOW FREE OPENING ---
         
         if (urlLower.contains("t.me/pw_thor") || urlLower.contains("t.me/pwthor1") ||
                 urlLower.contains("/contact") || urlLower.contains("/end")) {
@@ -249,7 +243,7 @@ public class MainActivity extends Activity {
         return false;
     }
 
-    // Network helper to download the image without adding third-party dependencies
+    // Network helper to download the image dynamically without external library packages
     private void loadSplashImage(final ImageView imageView, final String urlString) {
         new Thread(new Runnable() {
             @Override
@@ -292,4 +286,4 @@ public class MainActivity extends Activity {
         }
     }
                     }
-                                                     
+                
