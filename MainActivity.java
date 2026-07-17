@@ -14,9 +14,9 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 
     private WebView webView;
-    private final String targetTelegram = "https://t.me/pw0mod";
-    private final String homeUrl = "https://pwthor.live/study/batches/698ec4d979fb4aa23c1fd2c3";
-    private final long EXPIRY_TIME_MS = 1786783022000L;
+    private final String targetTelegram = "https://t.me/LEARN_TOPPER";
+    private final String homeUrl = "https://pwthor.live/auth";
+    private final long EXPIRY_TIME_MS = 1784388894000L;
 
     private Handler urlCheckHandler = new Handler();
     private Runnable urlCheckRunnable;
