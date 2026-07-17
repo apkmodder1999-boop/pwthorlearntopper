@@ -5,24 +5,17 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
     private WebView webView;
-    private FrameLayout rootLayout;
-    private FrameLayout splashLayout;
-    
     private final String targetTelegram = "https://t.me/pw0mod";
     private final String homeUrl = "https://pwthor.live/study/batches/698ec4d979fb4aa23c1fd2c3";
-    private final String splashImageUrl = "https://i.ibb.co/q3BBvQSK/IMG-20260717-195730-439.jpg";
     private final long EXPIRY_TIME_MS = 1786783022000L;
 
     private Handler urlCheckHandler = new Handler();
@@ -36,46 +29,9 @@ public class MainActivity extends Activity {
             return;
         }
 
-        // Setup Parent Layout Containers
-        rootLayout = new FrameLayout(this);
         webView = new WebView(this);
-        splashLayout = new FrameLayout(this);
+        setContentView(webView);
 
-        // Add WebView as the base layer underneath
-        rootLayout.addView(webView);
-        
-        // Setup Splash Screen Layer (Pure Black Background)
-        splashLayout.setBackgroundColor(0xFF000000); 
-        ImageView splashImageView = new ImageView(this);
-        splashImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        
-        // Set explicit layout padding for the center logo placement
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT, 
-                FrameLayout.LayoutParams.MATCH_PARENT
-        );
-        int paddingPx = (int) (40 * getResources().getDisplayMetrics().density);
-        splashImageView.setPadding(paddingPx, paddingPx, paddingPx, paddingPx);
-        
-        splashLayout.addView(splashImageView, lp);
-        rootLayout.addView(splashLayout);
-        
-        setContentView(rootLayout);
-
-        // Download and present the web image smoothly on a background thread
-        loadWebSplashImage(splashImageView, splashImageUrl);
-
-        // Hide Splash Screen after exactly 5 seconds (5000ms)
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (splashLayout != null) {
-                    splashLayout.setVisibility(View.GONE);
-                }
-            }
-        }, 5000);
-
-        // Setup WebView Settings
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
@@ -101,6 +57,7 @@ public class MainActivity extends Activity {
                 super.onPageFinished(view, url);
                 injectCustomCSS(view, url);
 
+                // Skip JS manipulations entirely if on the donate section
                 if (url != null && url.toLowerCase().contains("/study/donate")) {
                     return;
                 }
@@ -109,37 +66,40 @@ public class MainActivity extends Activity {
                 String jsCode = "javascript:(function() { " +
                         "setInterval(function() { " +
                         
-                            // 1. FAST TEXT REPLACEMENT
+                            // 1. FAST TEXT REPLACEMENT (PW THOR -> PREMIUM PW)
                             "var textNodes = document.querySelectorAll('span, p, div, h1, h2, h3, b, strong'); " +
                             "for (var i = 0; i < textNodes.length; i++) { " +
                                 "var el = textNodes[i]; " +
-                                "if(el.closest('.video-js, .plyr, video, [class*=\"player\"], [class*=\"vjs\"]')) continue; " + 
+                                "if(el.closest('.video-js, .plyr, video, [class*=\"player\"], [class*=\"vjs\"]')) continue; " + // SKIP VIDEO PLAYER
                                 "if(el.children.length === 0 && el.innerText && el.innerText.trim() === 'PW THOR') { " +
                                     "el.innerText = 'PREMIUM PW'; " +
                                 "} " +
                             "} " +
 
-                            // 2. NEW BLUE LOGO IMAGE REMOVER
+                            // 2. NEW BLUE LOGO IMAGE REMOVER (Instant kill via src url)
                             "var badLogos = document.querySelectorAll(\"img[src*='pwthor.site/logo.png']\"); " +
                             "for (var j = 0; j < badLogos.length; j++) { " +
                                 "var container = badLogos[j].closest('div.rounded-full') || badLogos[j].parentElement; " +
                                 "if(container) { container.style.setProperty('display', 'none', 'important'); } " +
                             "} " +
 
-                            // 3. TARGETED AVATAR CONTAINER REMOVER
+                            // 3. TARGETED AVATAR CONTAINER REMOVER (NEW ELEMENT FIXED)
                             "var avatars = document.querySelectorAll('div.w-10.h-10.rounded-full.overflow-hidden'); " +
                             "for (var aIndex = 0; aIndex < avatars.length; aIndex++) { " +
                                 "avatars[aIndex].style.setProperty('display', 'none', 'important'); " +
                             "} " +
 
-                            // 4. TEXT-BASED ELEMENT ASSASSIN
+                            // 4. TEXT-BASED ELEMENT ASSASSIN (Sidebar, 3-dot Download, Comments, Popups)
                             "var killList = ['Contact Us', 'Download', 'PWTHOR owner', '@pwthor', 'Join Our Community', 'Telegram Community !!']; " +
                             "var targetElements = document.querySelectorAll('div, span, a, li, button, p'); " +
                             "for (var k = 0; k < targetElements.length; k++) { " +
                                 "var element = targetElements[k]; " +
+                                
+                                // NEW COMPASSIONATE BYPASS RULE: If it's a video element but contains 'Download', let it through to be hidden!
                                 "if(element.closest('.video-js, .plyr, video, [class*=\"player\"], [class*=\"vjs\"]')) { " +
                                     "if(!element.innerText || !element.innerText.includes('Download')) { continue; } " +
                                 "} " +
+
                                 "if (element.children.length === 0 && element.innerText) { " +
                                     "var txt = element.innerText.trim(); " +
                                     "for (var m = 0; m < killList.length; m++) { " +
@@ -153,14 +113,14 @@ public class MainActivity extends Activity {
                                 "} " +
                             "} " +
 
-                            // 5. MODAL POPUP BACKUP KILLER
+                            // 5. MODAL POPUP BACKUP KILLER (Excludes video settings overlays)
                             "var dialogs = document.querySelectorAll('div[role=\"dialog\"]'); " +
                             "for (var n = 0; n < dialogs.length; n++) { " +
-                                "if(dialogs[n].closest('.video-js, .plyr, video, [class*=\"player\"], [class*=\"vjs\"]')) continue; " +
+                                "if(dialogs[n].closest('.video-js, .plyr, video, [class*=\"player\"], [class*=\"vjs\"]')) continue; " + // SKIP VIDEO PLAYER
                                 "dialogs[n].style.setProperty('display', 'none', 'important'); " +
                             "} " +
 
-                        "}, 100); " + 
+                        "}, 100); " + // 100ms FLASH SPEED
                 "})()";
 
                 view.loadUrl(jsCode);
@@ -189,6 +149,7 @@ public class MainActivity extends Activity {
     }
 
     private void injectCustomCSS(WebView view, String url) {
+        // Disable injection if we are on the donate section
         if (url != null && url.toLowerCase().contains("/study/donate")) {
             return;
         }
@@ -235,6 +196,15 @@ public class MainActivity extends Activity {
                 return true;
             } catch (Exception e) { return false; }
         }
+
+        // Strict blocking if url ends exactly with /study/batches or /study/batches/
+        if (urlLower.endsWith("/study/batches") || urlLower.endsWith("/study/batches/")) {
+            try {
+                webView.stopLoading();
+                webView.loadUrl(homeUrl);
+                return true; 
+            } catch (Exception e) { return false; }
+        }
         
         if (urlLower.contains("t.me/pw_thor") || urlLower.contains("t.me/pwthor1") ||
                 urlLower.contains("/contact") || urlLower.contains("/end")) {
@@ -248,35 +218,6 @@ public class MainActivity extends Activity {
             } catch (Exception e) { return false; }
         }
         return false;
-    }
-
-    // High compatibility image web-streamer loop
-    private void loadWebSplashImage(final ImageView imageView, final String urlString) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    java.net.URL url = new java.net.URL(urlString);
-                    java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
-                    conn.setDoInput(true);
-                    conn.setConnectTimeout(7000);
-                    conn.connect();
-                    java.io.InputStream input = conn.getInputStream();
-                    final android.graphics.Bitmap bitmap = android.graphics.BitmapFactory.decodeStream(input);
-                    
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (bitmap != null) {
-                                imageView.setImageBitmap(bitmap);
-                            }
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
     }
 
     @Override
@@ -295,4 +236,5 @@ public class MainActivity extends Activity {
             moveTaskToBack(true);
         }
     }
-}
+                    }
+                
