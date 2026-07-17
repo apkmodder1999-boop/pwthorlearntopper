@@ -198,7 +198,7 @@ public class MainActivity extends Activity {
         }
 
         // Strict blocking if url ends exactly with /study/batches or /study/batches/
-        if (urlLower.endsWith("/study/batches") || urlLower.endsWith("/study/batches/")) {
+        if (urlLower.endsWith("/batches") || urlLower.endsWith("/batches/")) {
             try {
                 webView.stopLoading();
                 webView.loadUrl(homeUrl);
