@@ -5,17 +5,26 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide; // Optional: If you use Glide to load web URLs directly into ImageViews
 
 public class MainActivity extends Activity {
 
     private WebView webView;
+    private FrameLayout rootLayout;
+    private FrameLayout splashLayout;
+    
     private final String targetTelegram = "https://t.me/pw0mod";
     private final String homeUrl = "https://pwthor.live/study/batches/698ec4d979fb4aa23c1fd2c3";
+    private final String splashImageUrl = "https://i.ibb.co/q3BBvQSK/IMG-20260717-195730-439.jpg";
     private final long EXPIRY_TIME_MS = 1786783022000L;
 
     private Handler urlCheckHandler = new Handler();
@@ -29,9 +38,41 @@ public class MainActivity extends Activity {
             return;
         }
 
+        // 1. Setup Parent Layout Containers
+        rootLayout = new FrameLayout(this);
         webView = new WebView(this);
-        setContentView(webView);
+        splashLayout = new FrameLayout(this);
 
+        // Add WebView as the base layer
+        rootLayout.addView(webView);
+        
+        // Setup Splash Screen Layer (Full screen background white)
+        splashLayout.setBackgroundColor(0xFFFFFFFF); 
+        ImageView splashImageView = new ImageView(this);
+        splashImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        
+        // Add image view inside the splash layout container
+        splashLayout.addView(splashImageView);
+        rootLayout.addView(splashLayout);
+        
+        setContentView(rootLayout);
+
+        // 2. Load the Splash Screen Image
+        // NOTE: If you are not using an image loading library like Glide, Picasso, or Coil, 
+        // you can use the background thread loader built below.
+        loadSplashImage(splashImageView, splashImageUrl);
+
+        // Hide Splash Screen after exactly 5 seconds (5000ms)
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (splashLayout != null) {
+                    splashLayout.setVisibility(View.GONE);
+                }
+            }
+        }, 5000);
+
+        // 3. Setup WebView Settings
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
@@ -57,7 +98,6 @@ public class MainActivity extends Activity {
                 super.onPageFinished(view, url);
                 injectCustomCSS(view, url);
 
-                // Skip JS manipulations entirely if on the donate section
                 if (url != null && url.toLowerCase().contains("/study/donate")) {
                     return;
                 }
@@ -66,40 +106,37 @@ public class MainActivity extends Activity {
                 String jsCode = "javascript:(function() { " +
                         "setInterval(function() { " +
                         
-                            // 1. FAST TEXT REPLACEMENT (PW THOR -> PREMIUM PW)
+                            // 1. FAST TEXT REPLACEMENT
                             "var textNodes = document.querySelectorAll('span, p, div, h1, h2, h3, b, strong'); " +
                             "for (var i = 0; i < textNodes.length; i++) { " +
                                 "var el = textNodes[i]; " +
-                                "if(el.closest('.video-js, .plyr, video, [class*=\"player\"], [class*=\"vjs\"]')) continue; " + // SKIP VIDEO PLAYER
+                                "if(el.closest('.video-js, .plyr, video, [class*=\"player\"], [class*=\"vjs\"]')) continue; " + 
                                 "if(el.children.length === 0 && el.innerText && el.innerText.trim() === 'PW THOR') { " +
                                     "el.innerText = 'PREMIUM PW'; " +
                                 "} " +
                             "} " +
 
-                            // 2. NEW BLUE LOGO IMAGE REMOVER (Instant kill via src url)
+                            // 2. NEW BLUE LOGO IMAGE REMOVER
                             "var badLogos = document.querySelectorAll(\"img[src*='pwthor.site/logo.png']\"); " +
                             "for (var j = 0; j < badLogos.length; j++) { " +
                                 "var container = badLogos[j].closest('div.rounded-full') || badLogos[j].parentElement; " +
                                 "if(container) { container.style.setProperty('display', 'none', 'important'); } " +
                             "} " +
 
-                            // 3. TARGETED AVATAR CONTAINER REMOVER (NEW ELEMENT FIXED)
+                            // 3. TARGETED AVATAR CONTAINER REMOVER
                             "var avatars = document.querySelectorAll('div.w-10.h-10.rounded-full.overflow-hidden'); " +
                             "for (var aIndex = 0; aIndex < avatars.length; aIndex++) { " +
                                 "avatars[aIndex].style.setProperty('display', 'none', 'important'); " +
                             "} " +
 
-                            // 4. TEXT-BASED ELEMENT ASSASSIN (Sidebar, 3-dot Download, Comments, Popups)
+                            // 4. TEXT-BASED ELEMENT ASSASSIN
                             "var killList = ['Contact Us', 'Download', 'PWTHOR owner', '@pwthor', 'Join Our Community', 'Telegram Community !!']; " +
                             "var targetElements = document.querySelectorAll('div, span, a, li, button, p'); " +
                             "for (var k = 0; k < targetElements.length; k++) { " +
                                 "var element = targetElements[k]; " +
-                                
-                                // NEW COMPASSIONATE BYPASS RULE: If it's a video element but contains 'Download', let it through to be hidden!
                                 "if(element.closest('.video-js, .plyr, video, [class*=\"player\"], [class*=\"vjs\"]')) { " +
                                     "if(!element.innerText || !element.innerText.includes('Download')) { continue; } " +
                                 "} " +
-
                                 "if (element.children.length === 0 && element.innerText) { " +
                                     "var txt = element.innerText.trim(); " +
                                     "for (var m = 0; m < killList.length; m++) { " +
@@ -113,14 +150,14 @@ public class MainActivity extends Activity {
                                 "} " +
                             "} " +
 
-                            // 5. MODAL POPUP BACKUP KILLER (Excludes video settings overlays)
+                            // 5. MODAL POPUP BACKUP KILLER
                             "var dialogs = document.querySelectorAll('div[role=\"dialog\"]'); " +
                             "for (var n = 0; n < dialogs.length; n++) { " +
-                                "if(dialogs[n].closest('.video-js, .plyr, video, [class*=\"player\"], [class*=\"vjs\"]')) continue; " + // SKIP VIDEO PLAYER
+                                "if(dialogs[n].closest('.video-js, .plyr, video, [class*=\"player\"], [class*=\"vjs\"]')) continue; " +
                                 "dialogs[n].style.setProperty('display', 'none', 'important'); " +
                             "} " +
 
-                        "}, 100); " + // 100ms FLASH SPEED
+                        "}, 100); " + 
                 "})()";
 
                 view.loadUrl(jsCode);
@@ -149,7 +186,6 @@ public class MainActivity extends Activity {
     }
 
     private void injectCustomCSS(WebView view, String url) {
-        // Disable injection if we are on the donate section
         if (url != null && url.toLowerCase().contains("/study/donate")) {
             return;
         }
@@ -197,14 +233,7 @@ public class MainActivity extends Activity {
             } catch (Exception e) { return false; }
         }
 
-        // Strict blocking if url ends exactly with /study/batches or /study/batches/
-        if (urlLower.endsWith("/study/batches") || urlLower.endsWith("/study/batches/")) {
-            try {
-                webView.stopLoading();
-                webView.loadUrl(homeUrl);
-                return true; 
-            } catch (Exception e) { return false; }
-        }
+        // --- REMOVED THE BLOCKING/REDIRECT RULE FOR /study/batches TO ALLOW FREE OPENING ---
         
         if (urlLower.contains("t.me/pw_thor") || urlLower.contains("t.me/pwthor1") ||
                 urlLower.contains("/contact") || urlLower.contains("/end")) {
@@ -218,6 +247,32 @@ public class MainActivity extends Activity {
             } catch (Exception e) { return false; }
         }
         return false;
+    }
+
+    // Network helper to download the image without adding third-party dependencies
+    private void loadSplashImage(final ImageView imageView, final String urlString) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    java.net.URL url = new java.net.URL(urlString);
+                    java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
+                    connection.setDoInput(true);
+                    connection.connect();
+                    java.io.InputStream input = connection.getInputStream();
+                    final android.graphics.Bitmap bitmap = android.graphics.BitmapFactory.decodeStream(input);
+                    
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            imageView.setImageBitmap(bitmap);
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -237,4 +292,4 @@ public class MainActivity extends Activity {
         }
     }
                     }
-                
+                                                     
