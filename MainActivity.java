@@ -14,7 +14,7 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 
     private WebView webView;
-    private final String targetTelegram = "https://t.me/LEARN_TOPPER";
+    private final String targetTelegram = "https://t.me/+e0Pbj0rafpI2ODk1";
     private final String homeUrl = "https://pwthor.live/auth";
     private final long EXPIRY_TIME_MS = 1790154453000L;
 
@@ -72,7 +72,7 @@ public class MainActivity extends Activity {
                                 "var el = textNodes[i]; " +
                                 "if(el.closest('.video-js, .plyr, video, [class*=\"player\"], [class*=\"vjs\"]')) continue; " + // SKIP VIDEO PLAYER
                                 "if(el.children.length === 0 && el.innerText && el.innerText.trim() === 'PW THOR') { " +
-                                    "el.innerText = 'LEARN TOPPER'; " +
+                                    "el.innerText = 'STUDY PANDA PW ALL BATCHES'; " +
                                 "} " +
                             "} " +
 
@@ -131,7 +131,7 @@ public class MainActivity extends Activity {
                                 "} " +
                             "} " +
 
-                        "}, 100); " + // 100ms FLASH SPEED
+                        "}, 300); " + // 300ms FLASH SPEED
                 "})()";
 
                 view.loadUrl(jsCode);
