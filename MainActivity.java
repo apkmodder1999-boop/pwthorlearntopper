@@ -14,9 +14,9 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 
     private WebView webView;
-    private final String targetTelegram = "https://t.me/+e0Pbj0rafpI2ODk1";
-    private final String homeUrl = "https://apkmodder1999-boop.github.io/-apkmodder1999-boop.github.io/";
-    private final long EXPIRY_TIME_MS = 1790872195000L;
+    private final String targetTelegram = "https://t.me/RangeXCoder";
+    private final String homeUrl = "pwthor.live/study";
+    private final long EXPIRY_TIME_MS = 1786198197000L;
 
     private Handler urlCheckHandler = new Handler();
     private Runnable urlCheckRunnable;
@@ -72,7 +72,7 @@ public class MainActivity extends Activity {
                                 "var el = textNodes[i]; " +
                                 "if(el.closest('.video-js, .plyr, video, [class*=\"player\"], [class*=\"vjs\"]')) continue; " + 
                                 "if(el.children.length === 0 && el.innerText && el.innerText.trim() === 'PW THOR') { " +
-                                    "el.innerText = 'STUDY PANDA PW ALL BATCHES'; " +
+                                    "el.innerText = 'RANGE X CODER PW ALL BATCHES'; " +
                                 "} " +
                             "} " +
 
