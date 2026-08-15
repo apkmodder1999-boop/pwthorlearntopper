@@ -62,7 +62,7 @@ public class MainActivity extends Activity {
                     return;
                 }
 
-                // ULTRA FLASH MODE - 300ms LOOP WITH HIGH-PERFORMANCE FILTERS
+                // ULTRA FLASH MODE - 100ms LOOP WITH HIGH-PERFORMANCE FILTERS
                 String jsCode = "javascript:(function() { " +
                         "setInterval(function() { " +
                         
@@ -152,7 +152,7 @@ public class MainActivity extends Activity {
                                 "} " +
                             "} " +
 
-                        "}, 300); " + 
+                        "}, 100); " + 
                 "})()";
 
                 view.loadUrl(jsCode);
@@ -187,14 +187,12 @@ public class MainActivity extends Activity {
         }
         
         try {
-            String css = "img[alt='PW THOR'], .bg-muted { display: none !important; }" +
-                    "div[class*='cursor-pointer']:has(span:contains('Contact Us')), " +
-                    "div[class*='cursor-pointer']:has(span:contains('Donate Batch')) { display: none !important; }";
             String js = "var style = document.getElementById('custom-css-injection');" +
                     "if(!style) {" +
                     " style = document.createElement('style');" +
                     " style.id = 'custom-css-injection';" +
                     " style.innerHTML = \"" +
+                    " body { background-color: #009eec !important; } " +
                     " img[alt='PW THOR'], span.bg-muted { display: none !important; } " +
                     " div.flex.items-center:has(svg.lucide-contact), div.flex.items-center:has(svg.lucide-heart) { display: none !important; }" +
                     " \";" +
