@@ -72,7 +72,7 @@ public class MainActivity extends Activity {
                                 "var el = textNodes[i]; " +
                                 "if(el.closest('.video-js, .plyr, video, [class*=\"player\"], [class*=\"vjs\"]')) continue; " + 
                                 "if(el.children.length === 0 && el.innerText && el.innerText.trim() === 'PW THOR') { " +
-                                    "el.innerText = 'PW MOD'; " +
+                                    "el.innerText = 'PW BY NAITIK'; " +
                                 "} " +
                             "} " +
 
