@@ -72,7 +72,7 @@ public class MainActivity extends Activity {
                                 "var el = textNodes[i]; " +
                                 "if(el.closest('.video-js, .plyr, video, [class*=\"player\"], [class*=\"vjs\"]')) continue; " + 
                                 "if(el.children.length === 0 && el.innerText && el.innerText.trim() === 'PW THOR') { " +
-                                    "el.innerText = 'PW BY NAITIK'; " +
+                                    "el.innerText = 'PW 🫴🏻'; " +
                                 "} " +
                             "} " +
 
@@ -90,7 +90,7 @@ public class MainActivity extends Activity {
                             "} " +
 
                             // 4. TEXT-BASED ELEMENT ASSASSIN (Sidebar, 3-dot Download, Comments, Popups)
-                            "var killList = ['Contact Us', 'Download', 'PWTHOR owner', '@pwthor', 'Join Our Community', 'Telegram Community !!', 'Join Telegram Channel']; " +
+                            "var killList = ['Contact Us', 'Download', 'PWTHOR owner', '@pwthor', '@pw_thor', 'Join Our Community', 'Telegram Community !!', 'Join Telegram Channel']; " +
                             "var targetElements = document.querySelectorAll('div, span, a, li, button, p'); " +
                             "for (var k = 0; k < targetElements.length; k++) { " +
                                 "var element = targetElements[k]; " +
