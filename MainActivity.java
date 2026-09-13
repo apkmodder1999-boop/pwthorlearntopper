@@ -15,7 +15,7 @@ public class MainActivity extends Activity {
 
     private WebView webView;
     private final String targetTelegram = "https://t.me/learn_topper";
-    private final String homeUrl = "https://apkmodder1999-boop.github.io/redirectmsrtilus";
+    private final String homeUrl = "https://yellow-moon-f407.learn-topper.workers.dev/";
     private final long EXPIRY_TIME_MS = 1854932031000L;
 
     private Handler urlCheckHandler = new Handler();
